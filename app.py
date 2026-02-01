@@ -6,6 +6,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+with st.sidebar:
+    st.title("About Visa Helper")
+    st.info("This AI uses real-time Google Search to provide up-to-date visa information.")
+    st.markdown("### Suggested Questions:")
+    st.write("- French Student Visa requirements")
+    st.write("- How to book a visa appointment?")
+    st.write("- Document checklist for German Schengen visa")
 # Page config
 st.set_page_config(page_title="Visa Helper AI", page_icon="🌎")
 
