@@ -56,7 +56,7 @@ def chat():
 
 @app.route("/", methods=["GET"])
 def home():
-    return "Visa Helper Chatbot with RAG (Gemini + Google CSE) is running!"
+    return "Visa Helper Chatbot is running!"
 
 if __name__ == "__main__":
     app.run(debug=True)
