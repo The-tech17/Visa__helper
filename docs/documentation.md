@@ -20,7 +20,7 @@ By leveraging real-time search grounding, this application solves the "hallucina
 | --- | --- |
 | **Language** | Python 3.10+ |
 | **Framework** | Streamlit |
-| **AI Model** | Google Gemini 1.5 Flash |
+| **AI Model** | Google Gemini 2.5 Flash |
 | **SDK/API** | google-genai (Search Grounding Tool) |
 | **Tools** | Windows PowerShell, GitHub, Dotenv |
 
@@ -36,6 +36,6 @@ By leveraging real-time search grounding, this application solves the "hallucina
 
 One of the most valuable parts of this project was the iterative debugging process:
 
-* **The Model Version Pivot:** Initially, a `403 Permission Denied` error occurred due to using restricted experimental model strings. I solved this by standardizing on **Gemini 1.5 Flash**, which offers the best balance of speed and RAG performance on the free tier.
+* **The Model Version Pivot:** Initially, a `403 Permission Denied` error occurred due to using restricted experimental model strings. I solved this by standardizing on **Gemini 2.5 Flash**, which offers the best balance of speed and RAG performance on the free tier.
 * **Interface Optimization:** Debugged a "Send" button failure caused by a JavaScript variable mismatch in the early Flask prototype. I improved this by migrating the entire project to **Streamlit**, which eliminated the need for complex custom JS and simplified the state management.
 * **API Quota Management:** Encountered a `429 Resource Exhausted` error while using a Custom Search API. I engineered a more robust solution by switching to the **native google-genai SDK Search Tool**, which integrates search directly into the model’s reasoning cycle, significantly reducing quota overhead and latency.
