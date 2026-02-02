@@ -6,7 +6,7 @@ The application follows a **RAG (Retrieval-Augmented Generation)** pattern, ensu
 
 * **User Layer:** A responsive Streamlit interface for seamless query input.
 * **Orchestration Layer:** A Python backend (google-genai SDK) that coordinates between the user and the AI.
-* **Intelligence & Retrieval Layer:** **Gemini 2.5 Flash** integrated with the **Google Search Tool**, which automatically triggers web searches to retrieve and synthesize current visa regulations and official links.
+* **Intelligence & Retrieval Layer:** **Gemini 2.5 Flash** integrated with the **Google Search Tool**, which automatically triggers web searches to retrieve and synthesize current visa regulations and official links. It also offers a dynamic checklist of important documents required according to your visa application. For example, if you ask, "My spouse is travelling with me.", visa helper generates a checklist of documents like "spouse's info: identification card, PAN card,..." etc. which is helpful in case a user is missing out anything important.
 
 ### 2. Project Vision & Purpose
 
