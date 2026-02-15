@@ -115,11 +115,22 @@ if prompt := st.chat_input("Ask about your visa application..."):
 
             # Build final display string
             final_display = ai_response.replace("[", "").replace("]", "")
-            if response.candidates[0].grounding_metadata.search_entry_point:
-                final_display += "\n\n*Information verified with Google Search.*"
 
         with st.chat_message("assistant"):
             st.markdown(final_display)
+            
+            # 2. Add Sources in an Expander for a clean look
+            metadata = response.candidates[0].grounding_metadata
+            if metadata and metadata.grounding_chunks:
+                with st.expander("🔍 View Official Sources"):
+                    seen_links = set()
+                    for chunk in metadata.grounding_chunks:
+                        if chunk.web:
+                            title = chunk.web.title
+                            uri = chunk.web.uri
+                            if uri not in seen_links:
+                                st.markdown(f"🔗 [{title}]({uri})")
+                                seen_links.add(uri)
         
         st.session_state.messages.append({"role": "assistant", "content": final_display})
         st.rerun()
