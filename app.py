@@ -121,7 +121,12 @@ if prompt := st.chat_input("Ask about your visa application..."):
             
             # 2. Add Sources in an Expander for a clean look
             metadata = response.candidates[0].grounding_metadata
-            if metadata and metadata.grounding_chunks:
+            if metadata.search_entry_point:
+                st.markdown("---")
+                # This renders the official 'Search suggestions' box
+                st.components.v1.html(metadata.search_entry_point.rendered_content, height=100)
+                
+            if metadata.grounding_chunks:
                 with st.expander("🔍 View Official Sources"):
                     seen_links = set()
                     for chunk in metadata.grounding_chunks:
