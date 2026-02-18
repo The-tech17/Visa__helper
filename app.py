@@ -11,6 +11,18 @@ load_dotenv()
 # --- 1. PAGE CONFIG (MUST BE FIRST) ---
 st.set_page_config(page_title="Visa Helper AI", page_icon="🌎", layout="wide")
 
+# --- THEME INITIALIZATION ---
+if "theme" not in st.session_state:
+    st.session_state.theme = "Light"
+
+# Add the toggle to the sidebar
+with st.sidebar:
+    st.markdown("### 🎨 Appearance")
+    if st.toggle("Dark Mode", value=(st.session_state.theme == "Dark")):
+        st.session_state.theme = "Dark"
+    else:
+        st.session_state.theme = "Light"
+
 # --- 2. PASTEL THEME CSS ---
 st.markdown("""
 <style>
@@ -220,6 +232,33 @@ hr {
     color: #5a7fbf;
     font-size: 0.9rem;
 }
+/* ── Midnight Indigo Dark Palette ── */
+:root {
+    --bg:          #0f111a;
+    --surface:     #1a1d2b;
+    --sidebar-bg:  #121420;
+    --accent1:     #82aaff;   /* soft blue */
+    --accent2:     #c792ea;   /* lavender */
+    --accent3:     #c3e88d;   /* light sage */
+    --accent4:     #ff757f;   /* coral */
+    --text-dark:   #ffffff;
+    --text-mid:    #a6accd;
+    --text-light:  #676e95;
+    --bubble-user: #2d324d;   /* deep indigo */
+    --bubble-ai:   #232635;   /* darker navy */
+    --border:      #2d324d;
+    --shadow:      rgba(0, 0, 0, 0.4);
+}
+
+/* Update User Bubble Border */
+[data-testid="stChatMessage"][data-testid*="user"] {
+    border: 1.5px solid #4a517a !important;
+}
+
+/* Update AI Bubble Border */
+div[data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-assistant"]) {
+    border: 1.5px solid #2d324d !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -386,30 +425,35 @@ if prompt := st.chat_input("Ask about your visa application..."):
         with st.chat_message("assistant"):
             st.markdown(final_display)
 
+            # --- THE ROBUST SOURCE CHECK ---
+            search_entry_point, grounding_chunks, _ = safe_get_grounding(response)
+
             # ── Google Search suggestion widget ──
-            if search_entry_point:
+            if search_entry_point and hasattr(search_entry_point, 'rendered_content'):
                 rendered = getattr(search_entry_point, "rendered_content", None)
                 if rendered:
                     st.markdown("---")
                     st.components.v1.html(rendered, height=80, scrolling=False)
 
-            # ── Source links in expander ──
+            # 2. Manual Link Extraction (The "Fallback" that solves your glitch)
+            all_links = []
             if grounding_chunks:
-                seen_uris = set()
-                valid_sources = []
                 for chunk in grounding_chunks:
-                    web = getattr(chunk, "web", None)
-                    if web:
-                        uri = getattr(web, "uri", None)
-                        title = getattr(web, "title", None) or uri
-                        if uri and uri not in seen_uris:
-                            seen_uris.add(uri)
-                            valid_sources.append((title, uri))
+                    if hasattr(chunk, 'web') and chunk.web:
+                        all_links.append((chunk.web.title, chunk.web.uri))
+            
+            # 3. Last Resort: Check if the model put links in the search entry point but not chunks
+            if not all_links and search_entry_point:
+                 # Sometimes metadata is empty but the model provided search suggestions
+                 st.info("💡 Official links are available in the search suggestions above.")
 
-                if valid_sources:
-                    with st.expander(f"🔍 View {len(valid_sources)} Official Source(s)"):
-                        for title, uri in valid_sources:
-                            st.markdown(f"🔗 [{title}]({uri})")
+            if all_links:
+                with st.expander(f"📚 View {len(all_links)} Official Source(s)"):
+                    seen = set()
+                    for title, uri in all_links:
+                        if uri not in seen:
+                            st.markdown(f"🔗 [{title or 'Official Source'}]({uri})")
+                            seen.add(uri)
 
         st.session_state.messages.append({"role": "assistant", "content": final_display})
         st.rerun()
