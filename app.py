@@ -22,15 +22,6 @@ with st.sidebar:
     st.session_state.theme = "Dark" if dark_mode else "Light"
 
 # --- 3. DYNAMIC CSS (Switches based on Toggle) ---
-common_styles = """
-<style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap');
-.stApp { font-family: 'DM Sans', sans-serif; }
-h1, h2, h3 { font-family: 'DM Serif Display', serif !important; }
-/* ... (Keep your existing bubble and button transition styles here) ... */
-</style>
-"""
-
 if st.session_state.theme == "Light":
     theme_css = """
     <style>
