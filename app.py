@@ -11,25 +11,38 @@ load_dotenv()
 # --- 1. PAGE CONFIG (MUST BE FIRST) ---
 st.set_page_config(page_title="Visa Helper AI", page_icon="🌎", layout="wide")
 
-# --- 2. THEME INITIALIZATION & SIDEBAR TOGGLE ---
+# --- 2. THEME & CSS INITIALIZATION ---
 if "theme" not in st.session_state:
     st.session_state.theme = "Light"
 
 with st.sidebar:
-    st.markdown('<div class="sidebar-pill">🎨 Appearance</div>', unsafe_allow_html=True)
-    # The toggle updates the session state immediately
-    dark_mode = st.toggle("Dark Mode", value=(st.session_state.theme == "Dark"))
-    st.session_state.theme = "Dark" if dark_mode else "Light"
+    st.markdown('### 🎨 Appearance')
+    # Toggle updates session state; rerun ensures the CSS updates immediately
+    is_dark = st.toggle("Dark Mode", value=(st.session_state.theme == "Dark"))
+    new_theme = "Dark" if is_dark else "Light"
+    if new_theme != st.session_state.theme:
+        st.session_state.theme = new_theme
+        st.rerun()
 
-# --- 3. DYNAMIC CSS (Switches based on Toggle) ---
+# --- 3. Common styles and variables ---
+# Define Common Styles (Fonts, Bubbles, etc.)
+common_styles = """
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap');
+.stApp { font-family: 'DM Sans', sans-serif; }
+h1, h2, h3 { font-family: 'DM Serif Display', serif !important; }
+/* ... (Your existing bubble and button transition styles) ... */
+</style>
+"""
+
+# Define Theme-Specific Variables
 if st.session_state.theme == "Light":
     theme_css = """
     <style>
     :root {
         --bg: #f5f0eb; --surface: #fffaf6; --sidebar-bg: #fdf3e7;
-        --accent1: #e8c5a0; --accent2: #b5c9e8; --accent3: #c9e8c5; --accent4: #e8c5d6;
-        --text-dark: #3a3028; --text-mid: #6b5c4e;
-        --bubble-user: #ddeaff; --bubble-ai: #fff4e6; --border: #e5d9ce;
+        --accent1: #e8c5a0; --text-dark: #3a3028;
+        --bubble-user: #ddeaff; --bubble-ai: #fff4e6;
     }
     .stApp { background-color: var(--bg) !important; color: var(--text-dark); }
     [data-testid="stSidebar"] { background-color: var(--sidebar-bg) !important; }
@@ -40,16 +53,16 @@ else:
     <style>
     :root {
         --bg: #0f111a; --surface: #1a1d2b; --sidebar-bg: #121420;
-        --accent1: #82aaff; --accent2: #c792ea; --accent3: #c3e88d; --accent4: #ff757f;
-        --text-dark: #ffffff; --text-mid: #a6accd;
-        --bubble-user: #2d324d; --bubble-ai: #232635; --border: #2d324d;
+        --accent1: #82aaff; --text-dark: #ffffff;
+        --bubble-user: #2d324d; --bubble-ai: #232635;
     }
     .stApp { background-color: var(--bg) !important; color: var(--text-dark) !important; }
     [data-testid="stSidebar"] { background-color: var(--sidebar-bg) !important; }
-    h1, h2, h3, p, span, label { color: var(--text-dark) !important; }
+    h1, h2, h3, p, span, label, .stMarkdown { color: var(--text-dark) !important; }
     </style>
     """
 
+# Inject CSS (This fixes the 'NameError' and the 'Code Display' glitch)
 st.markdown(common_styles + theme_css, unsafe_allow_html=True)
 
 # --- 4. INITIALIZE CLIENT ---
